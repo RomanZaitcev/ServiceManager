@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceManager.Models;
 using System.Diagnostics;
@@ -6,9 +7,16 @@ namespace ServiceManager.Controllers
 {
     public class HomeController : Controller
     {
+        [Authorize] // неавторизованого відправить на сторінку входу
         public IActionResult Index()
         {
-            return View();
+            if (User.IsInRole(AppRoles.Manager))
+                return RedirectToAction("Dashboard", "Manager");
+
+            if (User.IsInRole(AppRoles.Technician))
+                return RedirectToAction("MyRepairs", "Technician");
+
+            return View(); // користувач без ролі бачить стандартну сторінку
         }
 
         public IActionResult Privacy()

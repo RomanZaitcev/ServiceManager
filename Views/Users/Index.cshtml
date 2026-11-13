@@ -1,0 +1,22 @@
+﻿@model List<ServiceManager.Models.UserListItem>
+@{
+    ViewData["Title"] = "Користувачі";
+}
+
+<h1>Користувачі</h1>
+<p><a class="btn btn-primary" asp-action="Create">Додати користувача</a></p>
+
+<table class="table">
+    <thead>
+        <tr><th>Email</th><th>Роль</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Email</td>
+                <td>@u.Role</td>
+            </tr>
+        }
+    </tbody>
+</table>

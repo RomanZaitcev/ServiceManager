@@ -7,6 +7,7 @@
 <p class="text-muted">Телефон: @Model.Phone</p>
 
 <p>
+    <a asp-controller="Orders" asp-action="Create" asp-route-clientId="@Model.Id" class="btn btn-success">Новий ремонт</a>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Редагувати</a>
     <a asp-action="Index" class="btn btn-secondary">До списку</a>
 </p>
@@ -47,7 +48,7 @@ else
                 var total = o.UsedParts.Sum(p => p.QuantityUsed * p.PriceAtTime);
 
                 <tr>
-                    <td>@o.Id</td>
+                    <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id">@o.Id</a></td>
                     <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@o.DeviceInfo</td>
                     <td>@o.ProblemDescription</td>

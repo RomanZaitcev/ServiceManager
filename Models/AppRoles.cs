@@ -4,5 +4,6 @@
     {
         public const string Manager = "Manager";
         public const string Technician = "Technician";
+        public const string ManagerOrTechnician = Manager + "," + Technician;
     }
 }

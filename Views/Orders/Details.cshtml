@@ -1,0 +1,121 @@
+﻿@model ServiceManager.Models.OrderDetailsViewModel
+@{
+    var o = Model.Order;
+    var isManager = User.IsInRole("Manager");
+    ViewData["Title"] = $"Замовлення №{o.Id}";
+}
+
+<h1>Замовлення №@o.Id <partial name="_StatusBadge" model="o.Status" /></h1>
+
+<div class="row mt-3">
+    <div class="col-md-7">
+        <table class="table">
+            <tr>
+                <th style="width:35%">Клієнт</th>
+                <td>
+                    @if (isManager && o.Client != null)
+                    {
+                        <a asp-controller="Clients" asp-action="Details" asp-route-id="@o.ClientId">@o.Client.FullName</a>
+                    }
+                    else
+                    {
+                        @o.Client?.FullName
+                    }
+                </td>
+            </tr>
+            <tr><th>Телефон</th><td>@o.Client?.Phone</td></tr>
+            <tr><th>Пристрій</th><td>@o.DeviceInfo</td></tr>
+            <tr><th>Несправність</th><td>@o.ProblemDescription</td></tr>
+            <tr><th>Майстер</th><td>@(o.Technician?.Email ?? "не призначено")</td></tr>
+            <tr><th>Створено</th><td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td></tr>
+            <tr><th>Оновлено</th><td>@(o.UpdatedAt?.ToString("dd.MM.yyyy HH:mm") ?? "—")</td></tr>
+            <tr><th>Коментар</th><td>@(string.IsNullOrWhiteSpace(o.Comment) ? "—" : o.Comment)</td></tr>
+        </table>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card mb-3">
+            <div class="card-header">Зміна статусу</div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" asp-route-id="@o.Id" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Статус</label>
+                        <select name="status" class="form-select">
+                            @foreach (var s in Html.GetEnumSelectList<OrderStatus>())
+                            {
+                                <option value="@s.Value" selected="@(s.Value == ((int)o.Status).ToString())">@s.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Коментар</label>
+                        <textarea name="comment" class="form-control" rows="3" maxlength="1000">@o.Comment</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </form>
+            </div>
+        </div>
+
+        @if (isManager)
+        {
+            <div class="card mb-3">
+                <div class="card-header">Призначити майстра</div>
+                <div class="card-body">
+                    <form asp-action="AssignTechnician" asp-route-id="@o.Id" method="post">
+                        <div class="mb-3">
+                            <select name="technicianId" class="form-select">
+                                <option value="">— не призначено —</option>
+                                @foreach (var t in Model.Technicians)
+                                {
+                                    <option value="@t.Value" selected="@(t.Value == o.TechnicianId)">@t.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Призначити</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<h4 class="mt-4">Використані деталі</h4>
+
+@if (o.UsedParts.Count == 0)
+{
+    <div class="alert alert-info">Деталі ще не списано.</div>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Код</th>
+                <th class="text-end">Кількість</th>
+                <th class="text-end">Ціна</th>
+                <th class="text-end">Сума</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in o.UsedParts)
+            {
+                <tr>
+                    <td>@p.InventoryItem?.Name</td>
+                    <td>@p.InventoryItem?.Code</td>
+                    <td class="text-end">@p.QuantityUsed</td>
+                    <td class="text-end">@p.PriceAtTime.ToString("N2")</td>
+                    <td class="text-end">@((p.QuantityUsed * p.PriceAtTime).ToString("N2"))</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4" class="text-end">Разом:</th>
+                <th class="text-end">@Model.PartsTotal.ToString("N2")</th>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary">До списку</a>

@@ -1,0 +1,70 @@
+﻿@model List<ServiceManager.Models.Order>
+@{
+    var isManager = User.IsInRole("Manager");
+    ViewData["Title"] = isManager ? "Замовлення" : "Мої ремонти";
+    var filter = ViewData["StatusFilter"] as OrderStatus?;
+    var filterValue = filter == null ? "" : ((int)filter.Value).ToString();
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="">Усі статуси</option>
+            @foreach (var s in Html.GetEnumSelectList<OrderStatus>())
+            {
+                <option value="@s.Value" selected="@(s.Value == filterValue)">@s.Text</option>
+            }
+        </select>
+    </div>
+    @if (isManager)
+    {
+        <div class="col text-end">
+            <a asp-action="Create" class="btn btn-success">Новий ремонт</a>
+        </div>
+    }
+</form>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Замовлень не знайдено.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Дата</th>
+                @if (isManager)
+                {
+                    <th>Клієнт</th>
+                }
+                <th>Пристрій</th>
+                <th>Статус</th>
+                <th>Майстер</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model)
+            {
+                <tr>
+                    <td>@o.Id</td>
+                    <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    @if (isManager)
+                    {
+                        <td>@o.Client?.FullName</td>
+                    }
+                    <td>@o.DeviceInfo</td>
+                    <td><partial name="_StatusBadge" model="o.Status" /></td>
+                    <td>@(o.Technician?.Email ?? "не призначено")</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@o.Id" class="btn btn-sm btn-outline-primary">Відкрити</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

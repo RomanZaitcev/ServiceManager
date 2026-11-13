@@ -29,6 +29,9 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Manager" asp-action="Dashboard">Панель</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Замовлення</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Clients" asp-action="Index">Клієнти</a>
                             </li>
                             <li class="nav-item">
@@ -38,7 +41,7 @@
                         @if (User.IsInRole("Technician"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Technician" asp-action="MyRepairs">Мої ремонти</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Мої ремонти</a>
                             </li>
                         }
                     </ul>
@@ -49,6 +52,18 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["Success"] is string successMessage)
+            {
+                <div class="alert alert-success">@successMessage</div>
+            }
+            @if (TempData["Info"] is string infoMessage)
+            {
+                <div class="alert alert-info">@infoMessage</div>
+            }
+            @if (TempData["Error"] is string errorMessage)
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
             @RenderBody()
         </main>
     </div>

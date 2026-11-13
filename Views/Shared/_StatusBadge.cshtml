@@ -1,0 +1,16 @@
+﻿@model ServiceManager.Models.OrderStatus
+@{
+    var badge = Model switch
+    {
+        OrderStatus.Received => "bg-secondary",
+        OrderStatus.Queued => "bg-info text-dark",
+        OrderStatus.Diagnostics => "bg-primary",
+        OrderStatus.AwaitingParts => "bg-warning text-dark",
+        OrderStatus.Repaired => "bg-success",
+        OrderStatus.Released => "bg-dark",
+        _ => "bg-secondary"
+    };
+    var text = Html.GetEnumSelectList<OrderStatus>()
+        .FirstOrDefault(x => x.Value == ((int)Model).ToString())?.Text ?? Model.ToString();
+}
+<span class="badge @badge">@text</span>

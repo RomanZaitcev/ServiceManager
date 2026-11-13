@@ -1,0 +1,42 @@
+﻿@model ServiceManager.Models.CreateOrderViewModel
+@{
+    ViewData["Title"] = "Новий ремонт";
+}
+
+<h1>Новий ремонт</h1>
+
+<form asp-action="Create" method="post" style="max-width:500px">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" placeholder="+380501234567" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+        <div class="form-text">Якщо клієнт з таким телефоном уже є, замовлення додасться до його картки.</div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DeviceInfo" class="form-label"></label>
+        <input asp-for="DeviceInfo" class="form-control" />
+        <span asp-validation-for="DeviceInfo" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ProblemDescription" class="form-label"></label>
+        <textarea asp-for="ProblemDescription" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="ProblemDescription" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Створити замовлення</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

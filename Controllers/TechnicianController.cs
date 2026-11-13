@@ -9,7 +9,7 @@ namespace ServiceManager.Controllers
     {
         public IActionResult MyRepairs()
         {
-            return View();
+            return RedirectToAction("Index", "Orders");
         }
     }
 }

@@ -7,16 +7,16 @@ namespace ServiceManager.Models
         [Display(Name = "Прийнято")]
         Received,
 
-        [Display(Name = "В черзі")]
+        [Display(Name = "У черзі")]
         Queued,
 
-        [Display(Name = "Діагностика")]
+        [Display(Name = "В роботі")]
         Diagnostics,
 
-        [Display(Name = "Очікує запчастини")]
+        [Display(Name = "Очікує запчастин")]
         AwaitingParts,
 
-        [Display(Name = "Відремонтовано")]
+        [Display(Name = "Виконано")]
         Repaired,
 
         [Display(Name = "Видано")]

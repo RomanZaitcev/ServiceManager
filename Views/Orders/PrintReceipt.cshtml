@@ -1,0 +1,61 @@
+﻿@model ServiceManager.Models.Order
+@{
+    Layout = null;
+    var orgName = "СервісЦентр";
+    var orgInfo = "м. Київ, вул. Прикладна, 1 · тел. +380 44 000 00 00";
+}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Квитанція №@Model.Id</title>
+    <partial name="_PrintStyles" />
+</head>
+<body>
+    <div class="toolbar no-print">
+        <button type="button" onclick="window.print()">Друкувати</button>
+        <a asp-action="Details" asp-route-id="@Model.Id">Назад до замовлення</a>
+    </div>
+
+    <div class="sheet">
+        <div class="head">
+            <div>
+                <div class="org">@orgName</div>
+                <div class="small">@orgInfo</div>
+            </div>
+            <div class="small" style="text-align:right">
+                Квитанція №@Model.Id<br />
+                від @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+            </div>
+        </div>
+
+        <h1>Квитанція про прийом пристрою на ремонт</h1>
+
+        <table class="info">
+            <tr><td class="k">Клієнт</td><td>@Model.Client?.FullName</td></tr>
+            <tr><td class="k">Телефон</td><td>@Model.Client?.Phone</td></tr>
+            <tr><td class="k">Адреса</td><td>@(string.IsNullOrWhiteSpace(Model.Client?.Address) ? "—" : Model.Client!.Address)</td></tr>
+            <tr><td class="k">Тип пристрою</td><td>@(Model.DeviceType ?? "—")</td></tr>
+            <tr><td class="k">Бренд/модель</td><td>@Model.DeviceInfo</td></tr>
+            <tr><td class="k">Серійний номер</td><td>@(Model.SerialNumber ?? "—")</td></tr>
+            <tr><td class="k">Комплектація</td><td>@(Model.Accessories ?? "—")</td></tr>
+            <tr><td class="k">Зовнішній стан</td><td>@(Model.ExternalCondition ?? "—")</td></tr>
+            <tr><td class="k">Заявлена несправність</td><td>@Model.ProblemDescription</td></tr>
+        </table>
+
+        <ol class="terms">
+            <li>Пристрій прийнято на діагностику та ремонт у зазначеній комплектації та зовнішньому стані.</li>
+            <li>Остаточна вартість ремонту погоджується із замовником після діагностики.</li>
+            <li>Замовник підтверджує, що наведені дані достовірні, і погоджується з умовами приймання.</li>
+            <li>Сервісний центр не несе відповідальності за збереження даних на пристрої.</li>
+            <li>Пристрій видається за пред'явленням цієї квитанції.</li>
+        </ol>
+
+        <div class="sign">
+            <div>Прийняв (менеджер)</div>
+            <div>Замовник (підпис) / @Model.Client?.FullName</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -17,6 +17,10 @@ namespace ServiceManager.Models
         [Display(Name = "Телефон")]
         public string Phone { get; set; } = string.Empty;
 
+        [StringLength(200)]
+        [Display(Name = "Адреса")]
+        public string? Address { get; set; }
+
         public List<Order> Orders { get; set; } = new();
     }
 }

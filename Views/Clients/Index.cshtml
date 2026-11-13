@@ -2,24 +2,32 @@
 @{
     ViewData["Title"] = "Клієнти";
     var search = ViewData["Search"] as string;
+    var page = (int)ViewData["Page"]!;
+    var pageSize = (int)ViewData["PageSize"]!;
+    var totalPages = (int)ViewData["TotalPages"]!;
+    var total = (int)ViewData["Total"]!;
+    var from = total == 0 ? 0 : (page - 1) * pageSize + 1;
+    var to = Math.Min(page * pageSize, total);
 }
 
-<h1>Клієнти</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Клієнти</h1>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Додати клієнта</a>
+</div>
 
 <form method="get" class="row g-2 mb-3">
-    <div class="col-md-6">
-        <input type="text" name="search" value="@search" class="form-control"
-               placeholder="Пошук за ПІБ або телефоном" />
+    <div class="col-md-5">
+        <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" value="@search" class="form-control" placeholder="Пошук за ім'ям, телефоном..." />
+        </div>
     </div>
     <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Знайти</button>
+        <button type="submit" class="btn btn-outline-secondary">Знайти</button>
         @if (!string.IsNullOrEmpty(search))
         {
             <a asp-action="Index" class="btn btn-outline-secondary">Скинути</a>
         }
-    </div>
-    <div class="col text-end">
-        <a asp-action="Create" class="btn btn-success">Додати клієнта</a>
     </div>
 </form>
 
@@ -32,25 +40,51 @@ else
     <table class="table table-hover align-middle">
         <thead>
             <tr>
-                <th>ПІБ</th>
+                <th>ID</th>
+                <th>Клієнт</th>
                 <th>Телефон</th>
-                <th>Ремонтів</th>
-                <th></th>
+                <th>Адреса</th>
+                <th>Замовлень</th>
+                <th>Загальна сума</th>
+                <th>Дії</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var c in Model)
             {
                 <tr>
+                    <td>#@c.Id</td>
                     <td>@c.FullName</td>
                     <td>@c.Phone</td>
+                    <td>@(c.Address ?? "—")</td>
                     <td>@c.OrdersCount</td>
-                    <td class="text-end">
-                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Картка</a>
-                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">Редагувати</a>
+                    <td>@c.TotalSum.ToString("N0") ₴</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-primary"><i class="bi bi-clock-history"></i> Історія</a>
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i> Редагувати</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">Показано @from–@to з @total клієнтів</div>
+        <nav>
+            <ul class="pagination mb-0">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-page="@(page - 1)">Попередня</a>
+                </li>
+                @for (var i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == page ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-page="@(page + 1)">Наступна</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 }

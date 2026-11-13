@@ -1,0 +1,85 @@
+﻿@model ServiceManager.Models.Order
+@{
+    Layout = null;
+    var orgName = "СервісЦентр";
+    var orgInfo = "м. Київ, вул. Прикладна, 1 · тел. +380 44 000 00 00";
+    var total = Model.UsedParts.Sum(p => p.QuantityUsed * p.PriceAtTime);
+    var actDate = Model.UpdatedAt ?? DateTime.Now;
+    var n = 0;
+}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Акт №@Model.Id</title>
+    <partial name="_PrintStyles" />
+</head>
+<body>
+    <div class="toolbar no-print">
+        <button type="button" onclick="window.print()">Друкувати</button>
+        <a asp-action="Details" asp-route-id="@Model.Id">Назад до замовлення</a>
+    </div>
+
+    <div class="sheet">
+        <div class="head">
+            <div>
+                <div class="org">@orgName</div>
+                <div class="small">@orgInfo</div>
+            </div>
+            <div class="small" style="text-align:right">
+                Акт до замовлення №@Model.Id<br />
+                від @actDate.ToString("dd.MM.yyyy")
+            </div>
+        </div>
+
+        <h1>Акт виконаних робіт</h1>
+
+        <table class="info">
+            <tr><td class="k">Замовник</td><td>@Model.Client?.FullName, тел. @Model.Client?.Phone</td></tr>
+            <tr><td class="k">Пристрій</td><td>@(Model.DeviceType ?? "") @Model.DeviceInfo @(string.IsNullOrEmpty(Model.SerialNumber) ? "" : "(с/н " + Model.SerialNumber + ")")</td></tr>
+            <tr><td class="k">Заявлена несправність</td><td>@Model.ProblemDescription</td></tr>
+            <tr><td class="k">Результат діагностики</td><td>@(string.IsNullOrWhiteSpace(Model.Comment) ? "—" : Model.Comment)</td></tr>
+            <tr><td class="k">Виконавець</td><td>@(Model.Technician?.Email ?? "—")</td></tr>
+        </table>
+
+        <table class="items">
+            <thead>
+                <tr>
+                    <th style="width:40px">№</th>
+                    <th>Найменування</th>
+                    <th style="width:80px" class="r">Кількість</th>
+                    <th style="width:100px" class="r">Ціна, грн</th>
+                    <th style="width:110px" class="r">Сума, грн</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.UsedParts.Count == 0)
+                {
+                    <tr><td colspan="5" style="text-align:center">Роботи та запчастини не вказано</td></tr>
+                }
+                @foreach (var p in Model.UsedParts)
+                {
+                    n++;
+                    <tr>
+                        <td>@n</td>
+                        <td>@(p.InventoryItem?.ItemType == ItemType.Service ? "Послуга" : "Запчастина"): @p.InventoryItem?.Name</td>
+                        <td class="r">@p.QuantityUsed</td>
+                        <td class="r">@p.PriceAtTime.ToString("N2")</td>
+                        <td class="r">@((p.QuantityUsed * p.PriceAtTime).ToString("N2"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="total">Всього до сплати: @total.ToString("N2") грн</div>
+
+        <p class="terms">Роботи виконано в повному обсязі. Замовник претензій до обсягу, якості та строків виконання робіт не має. Пристрій перевірено в присутності замовника.</p>
+
+        <div class="sign">
+            <div>Виконавець</div>
+            <div>Замовник (підпис) / @Model.Client?.FullName</div>
+        </div>
+    </div>
+</body>
+</html>

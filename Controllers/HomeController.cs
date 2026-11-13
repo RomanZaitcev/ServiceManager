@@ -14,7 +14,7 @@ namespace ServiceManager.Controllers
                 return RedirectToAction("Dashboard", "Manager");
 
             if (User.IsInRole(AppRoles.Technician))
-                return RedirectToAction("MyRepairs", "Technician");
+                return RedirectToAction("Dashboard", "Technician");
 
             return View(); // користувач без ролі бачить стандартну сторінку
         }

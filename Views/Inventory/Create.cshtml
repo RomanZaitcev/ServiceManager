@@ -1,0 +1,17 @@
+﻿@model ServiceManager.Models.InventoryItem
+@{
+    ViewData["Title"] = "Нова позиція";
+}
+
+<h1>Нова позиція</h1>
+
+<form asp-action="Create" method="post" style="max-width:480px">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <partial name="_Fields" model="Model" />
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

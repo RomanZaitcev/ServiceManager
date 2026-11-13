@@ -1,17 +1,34 @@
 ﻿@model List<ServiceManager.Models.Order>
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
     var isManager = User.IsInRole("Manager");
-    ViewData["Title"] = isManager ? "Замовлення" : "Мої ремонти";
+    ViewData["Title"] = isManager ? "Список замовлень" : "Мої замовлення";
+    var search = ViewData["Search"] as string;
     var filter = ViewData["StatusFilter"] as OrderStatus?;
     var filterValue = filter == null ? "" : ((int)filter.Value).ToString();
+    var techFilter = ViewData["TechnicianFilter"] as string;
+    var technicians = ViewData["Technicians"] as List<SelectListItem> ?? new();
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">@ViewData["Title"]</h1>
+    @if (isManager)
+    {
+        <a asp-action="Create" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i> Створити замовлення</a>
+    }
+</div>
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="text" name="search" value="@search" class="form-control"
+                   placeholder="Пошук за ID, клієнтом, пристроєм" />
+        </div>
+    </div>
+    <div class="col-md-3">
         <select name="status" class="form-select" onchange="this.form.submit()">
-            <option value="">Усі статуси</option>
+            <option value="">Всі статуси</option>
             @foreach (var s in Html.GetEnumSelectList<OrderStatus>())
             {
                 <option value="@s.Value" selected="@(s.Value == filterValue)">@s.Text</option>
@@ -20,10 +37,19 @@
     </div>
     @if (isManager)
     {
-        <div class="col text-end">
-            <a asp-action="Create" class="btn btn-success">Новий ремонт</a>
+        <div class="col-md-3">
+            <select name="technicianId" class="form-select" onchange="this.form.submit()">
+                <option value="">Всі майстри</option>
+                @foreach (var t in technicians)
+                {
+                    <option value="@t.Value" selected="@(t.Value == techFilter)">@t.Text</option>
+                }
+            </select>
         </div>
     }
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Знайти</button>
+    </div>
 </form>
 
 @if (Model.Count == 0)
@@ -35,8 +61,7 @@ else
     <table class="table table-hover align-middle">
         <thead>
             <tr>
-                <th>№</th>
-                <th>Дата</th>
+                <th>ID</th>
                 @if (isManager)
                 {
                     <th>Клієнт</th>
@@ -44,7 +69,7 @@ else
                 <th>Пристрій</th>
                 <th>Статус</th>
                 <th>Майстер</th>
-                <th></th>
+                <th>Дія</th>
             </tr>
         </thead>
         <tbody>
@@ -52,17 +77,14 @@ else
             {
                 <tr>
                     <td>@o.Id</td>
-                    <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     @if (isManager)
                     {
                         <td>@o.Client?.FullName</td>
                     }
                     <td>@o.DeviceInfo</td>
                     <td><partial name="_StatusBadge" model="o.Status" /></td>
-                    <td>@(o.Technician?.Email ?? "не призначено")</td>
-                    <td class="text-end">
-                        <a asp-action="Details" asp-route-id="@o.Id" class="btn btn-sm btn-outline-primary">Відкрити</a>
-                    </td>
+                    <td>@(o.Technician?.Email?.Split('@')[0] ?? "—")</td>
+                    <td><a asp-action="Details" asp-route-id="@o.Id" class="btn btn-sm btn-outline-secondary">Перегляд</a></td>
                 </tr>
             }
         </tbody>

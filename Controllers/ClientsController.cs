@@ -17,8 +17,11 @@ namespace ServiceManager.Controllers
         }
 
         // Список із пошуком за ПІБ або телефоном
-        public async Task<IActionResult> Index(string? search)
+        // Список із пошуком за ПІБ або телефоном і пагінацією
+        public async Task<IActionResult> Index(string? search, int page = 1)
         {
+            const int pageSize = 10;
+
             var query = _db.Clients.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -27,18 +30,32 @@ namespace ServiceManager.Controllers
                 query = query.Where(c => c.FullName.Contains(search) || c.Phone.Contains(search));
             }
 
+            var total = await query.CountAsync();
+            var totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+            page = Math.Clamp(page, 1, totalPages);
+
             var clients = await query
                 .OrderBy(c => c.FullName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new ClientListItem
                 {
                     Id = c.Id,
                     FullName = c.FullName,
                     Phone = c.Phone,
-                    OrdersCount = c.Orders.Count
+                    Address = c.Address,
+                    OrdersCount = c.Orders.Count,
+                    TotalSum = c.Orders
+                        .SelectMany(o => o.UsedParts)
+                        .Sum(p => (decimal?)(p.QuantityUsed * p.PriceAtTime)) ?? 0
                 })
                 .ToListAsync();
 
             ViewData["Search"] = search;
+            ViewData["Page"] = page;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["Total"] = total;
             return View(clients);
         }
 
@@ -67,10 +84,11 @@ namespace ServiceManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FullName,Phone")] Client client)
+        public async Task<IActionResult> Create([Bind("FullName,Phone,Address")] Client client)
         {
             client.FullName = client.FullName?.Trim() ?? string.Empty;
             client.Phone = client.Phone?.Trim() ?? string.Empty;
+            client.Address = string.IsNullOrWhiteSpace(client.Address) ? null : client.Address.Trim();
 
             if (await _db.Clients.AnyAsync(c => c.Phone == client.Phone))
                 ModelState.AddModelError(nameof(client.Phone), "Клієнт з таким телефоном уже існує");
@@ -96,7 +114,7 @@ namespace ServiceManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Phone")] Client model)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Phone,Address")] Client model)
         {
             if (id != model.Id) return NotFound();
 
@@ -105,6 +123,7 @@ namespace ServiceManager.Controllers
 
             model.FullName = model.FullName?.Trim() ?? string.Empty;
             model.Phone = model.Phone?.Trim() ?? string.Empty;
+            model.Address = string.IsNullOrWhiteSpace(model.Address) ? null : model.Address.Trim();
 
             if (await _db.Clients.AnyAsync(c => c.Phone == model.Phone && c.Id != id))
                 ModelState.AddModelError(nameof(model.Phone), "Інший клієнт з таким телефоном уже існує");
@@ -114,6 +133,7 @@ namespace ServiceManager.Controllers
 
             client.FullName = model.FullName;
             client.Phone = model.Phone;
+            client.Address = model.Address;
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Details), new { id });

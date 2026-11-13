@@ -1,0 +1,41 @@
+﻿@model List<ServiceManager.Models.OrderPart>
+@{
+    var item = (InventoryItem)ViewData["Item"]!;
+    ViewData["Title"] = "Історія: " + item.Name;
+    var totalQty = Model.Sum(r => r.QuantityUsed);
+}
+
+<h1>Історія використання</h1>
+<p class="text-muted">@item.Code · @item.Name · використано всього: @totalQty</p>
+<p><a asp-action="Index" class="btn btn-secondary">До складу</a></p>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Ця позиція ще не використовувалась у замовленнях.</div>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Замовлення</th>
+                <th>Дата</th>
+                <th>Клієнт</th>
+                <th class="text-end">Кількість</th>
+                <th class="text-end">Ціна на момент ремонту</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@r.OrderId">№@r.OrderId</a></td>
+                    <td>@r.Order?.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@r.Order?.Client?.FullName</td>
+                    <td class="text-end">@r.QuantityUsed</td>
+                    <td class="text-end">@r.PriceAtTime.ToString("0.##") ₴</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

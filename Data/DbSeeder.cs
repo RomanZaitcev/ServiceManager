@@ -10,6 +10,17 @@ namespace ServiceManager.Data
         {
             var db = services.GetRequiredService<ApplicationDbContext>();
             await db.Database.MigrateAsync();
+            if (!await db.InventoryItems.AnyAsync())
+            {
+                db.InventoryItems.AddRange(
+                    new InventoryItem { Code = "ART-1002", Name = "Дисплейний модуль iPhone 13", ItemType = ItemType.Product, StockQuantity = 2, Price = 3200m },
+                    new InventoryItem { Code = "SRV-2001", Name = "Заміна екрана / тачскріна", ItemType = ItemType.Service, StockQuantity = 0, Price = 600m },
+                    new InventoryItem { Code = "ART-1015", Name = "Ролик захвату паперу Canon", ItemType = ItemType.Product, StockQuantity = 14, Price = 250m },
+                    new InventoryItem { Code = "SRV-2005", Name = "Діагностика та профілактика", ItemType = ItemType.Service, StockQuantity = 0, Price = 200m },
+                    new InventoryItem { Code = "ART-1020", Name = "Акумулятор LiFePO4 100Ah", ItemType = ItemType.Product, StockQuantity = 5, Price = 4500m },
+                    new InventoryItem { Code = "SRV-2012", Name = "Перепайка роз'ємів / портів", ItemType = ItemType.Service, StockQuantity = 0, Price = 400m });
+                await db.SaveChangesAsync();
+            }
 
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = services.GetRequiredService<UserManager<IdentityUser>>();

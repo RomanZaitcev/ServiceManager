@@ -4,7 +4,8 @@
 }
 
 <h1>@Model.FullName</h1>
-<p class="text-muted">Телефон: @Model.Phone</p>
+<p class="text-muted mb-1">Телефон: @Model.Phone</p>
+<p class="text-muted">Адреса: @(string.IsNullOrWhiteSpace(Model.Address) ? "—" : Model.Address)</p>
 
 <p>
     <a asp-controller="Orders" asp-action="Create" asp-route-clientId="@Model.Id" class="btn btn-success">Новий ремонт</a>
@@ -50,7 +51,7 @@ else
                 <tr>
                     <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id">@o.Id</a></td>
                     <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@o.DeviceInfo</td>
+                    <td>@(string.IsNullOrEmpty(o.DeviceType) ? "" : o.DeviceType + " ")@o.DeviceInfo</td>
                     <td>@o.ProblemDescription</td>
                     <td><span class="badge @badge">@Html.DisplayFor(_ => o.Status)</span></td>
                     <td>@(o.Technician?.Email ?? "не призначено")</td>

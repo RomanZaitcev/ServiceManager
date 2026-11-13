@@ -5,35 +5,95 @@
     ViewData["Title"] = $"Замовлення №{o.Id}";
 }
 
-<h1>Замовлення №@o.Id <partial name="_StatusBadge" model="o.Status" /></h1>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="mb-0">Замовлення №@o.Id <partial name="_StatusBadge" model="o.Status" /></h1>
+        <div class="text-muted">від @o.CreatedAt.ToString("dd.MM.yyyy")</div>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" disabled title="Буде в кроці 3"><i class="bi bi-printer"></i> Друк квитанції</button>
+        <button type="button" class="btn btn-outline-secondary" disabled title="Буде в кроці 3"><i class="bi bi-printer"></i> Друк акту</button>
+        <a asp-action="Index" class="btn btn-secondary">До списку</a>
+    </div>
+</div>
 
-<div class="row mt-3">
-    <div class="col-md-7">
-        <table class="table">
-            <tr>
-                <th style="width:35%">Клієнт</th>
-                <td>
-                    @if (isManager && o.Client != null)
-                    {
-                        <a asp-controller="Clients" asp-action="Details" asp-route-id="@o.ClientId">@o.Client.FullName</a>
-                    }
-                    else
-                    {
-                        @o.Client?.FullName
-                    }
-                </td>
-            </tr>
-            <tr><th>Телефон</th><td>@o.Client?.Phone</td></tr>
-            <tr><th>Пристрій</th><td>@o.DeviceInfo</td></tr>
-            <tr><th>Несправність</th><td>@o.ProblemDescription</td></tr>
-            <tr><th>Майстер</th><td>@(o.Technician?.Email ?? "не призначено")</td></tr>
-            <tr><th>Створено</th><td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td></tr>
-            <tr><th>Оновлено</th><td>@(o.UpdatedAt?.ToString("dd.MM.yyyy HH:mm") ?? "—")</td></tr>
-            <tr><th>Коментар</th><td>@(string.IsNullOrWhiteSpace(o.Comment) ? "—" : o.Comment)</td></tr>
-        </table>
+<div class="row g-3 mb-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Дані клієнта</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Клієнт</dt>
+                    <dd class="col-sm-8">
+                        @if (isManager)
+                        {
+                            <a asp-action="PrintReceipt" asp-route-id="@o.Id" target="_blank" class="btn btn-outline-secondary">
+                                <i class="bi bi-printer"></i> Друк квитанції
+                            </a>
+                            @if (o.Status == OrderStatus.Repaired || o.Status == OrderStatus.Released)
+                            {
+                                <a asp-action="PrintAct" asp-route-id="@o.Id" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="bi bi-printer"></i> Друк акту
+                                </a>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-outline-secondary" disabled title="Акт доступний після статусу «Виконано»">
+                                    <i class="bi bi-printer"></i> Друк акту
+                                </button>
+                            }
+                        }
+                    </dd>
+                    <dt class="col-sm-4">Телефон</dt>
+                    <dd class="col-sm-8">@o.Client?.Phone</dd>
+                    <dt class="col-sm-4">Адреса</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(o.Client?.Address) ? "—" : o.Client!.Address)</dd>
+                </dl>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-5">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">Дані пристрою</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Тип пристрою</dt>
+                    <dd class="col-sm-8">@(o.DeviceType ?? "—")</dd>
+                    <dt class="col-sm-4">Бренд/Модель</dt>
+                    <dd class="col-sm-8">@o.DeviceInfo</dd>
+                    <dt class="col-sm-4">Серійний номер</dt>
+                    <dd class="col-sm-8">@(o.SerialNumber ?? "—")</dd>
+                    <dt class="col-sm-4">Комплектація</dt>
+                    <dd class="col-sm-8">@(o.Accessories ?? "—")</dd>
+                    <dt class="col-sm-4">Зовнішній стан</dt>
+                    <dd class="col-sm-8">@(o.ExternalCondition ?? "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header">Технічний опис та статус</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Несправність</dt>
+                    <dd class="col-sm-8">@o.ProblemDescription</dd>
+                    <dt class="col-sm-4">Відповідальний майстер</dt>
+                    <dd class="col-sm-8">@(o.Technician?.Email ?? "не призначено")</dd>
+                    <dt class="col-sm-4">Коментар майстра</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(o.Comment) ? "—" : o.Comment)</dd>
+                    <dt class="col-sm-4">Оновлено</dt>
+                    <dd class="col-sm-8">@(o.UpdatedAt?.ToString("dd.MM.yyyy HH:mm") ?? "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
         <div class="card mb-3">
             <div class="card-header">Зміна статусу</div>
             <div class="card-body">
@@ -48,7 +108,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Коментар</label>
+                        <label class="form-label">Коментар / результати діагностики</label>
                         <textarea name="comment" class="form-control" rows="3" maxlength="1000">@o.Comment</textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Зберегти</button>
@@ -58,19 +118,17 @@
 
         @if (isManager)
         {
-            <div class="card mb-3">
-                <div class="card-header">Призначити майстра</div>
+            <div class="card">
+                <div class="card-header">Відповідальний майстер</div>
                 <div class="card-body">
-                    <form asp-action="AssignTechnician" asp-route-id="@o.Id" method="post">
-                        <div class="mb-3">
-                            <select name="technicianId" class="form-select">
-                                <option value="">— не призначено —</option>
-                                @foreach (var t in Model.Technicians)
-                                {
-                                    <option value="@t.Value" selected="@(t.Value == o.TechnicianId)">@t.Text</option>
-                                }
-                            </select>
-                        </div>
+                    <form asp-action="AssignTechnician" asp-route-id="@o.Id" method="post" class="d-flex gap-2">
+                        <select name="technicianId" class="form-select">
+                            <option value="">— не призначено —</option>
+                            @foreach (var t in Model.Technicians)
+                            {
+                                <option value="@t.Value" selected="@(t.Value == o.TechnicianId)">@t.Text</option>
+                            }
+                        </select>
                         <button type="submit" class="btn btn-primary">Призначити</button>
                     </form>
                 </div>
@@ -79,43 +137,102 @@
     </div>
 </div>
 
-<h4 class="mt-4">Використані деталі</h4>
-
-@if (o.UsedParts.Count == 0)
-{
-    <div class="alert alert-info">Деталі ще не списано.</div>
-}
-else
-{
-    <table class="table align-middle">
-        <thead>
-            <tr>
-                <th>Назва</th>
-                <th>Код</th>
-                <th class="text-end">Кількість</th>
-                <th class="text-end">Ціна</th>
-                <th class="text-end">Сума</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in o.UsedParts)
-            {
-                <tr>
-                    <td>@p.InventoryItem?.Name</td>
-                    <td>@p.InventoryItem?.Code</td>
-                    <td class="text-end">@p.QuantityUsed</td>
-                    <td class="text-end">@p.PriceAtTime.ToString("N2")</td>
-                    <td class="text-end">@((p.QuantityUsed * p.PriceAtTime).ToString("N2"))</td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-end">Разом:</th>
-                <th class="text-end">@Model.PartsTotal.ToString("N2")</th>
-            </tr>
-        </tfoot>
-    </table>
+@{
+    var locked = o.Status == OrderStatus.Released;
 }
 
-<a asp-action="Index" class="btn btn-secondary">До списку</a>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Роботи та запчастини</span>
+        @if (!locked)
+        {
+            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPartModal">
+                <i class="bi bi-plus-lg"></i> Додати роботу або запчастину
+            </button>
+        }
+    </div>
+    <div class="card-body">
+        @if (o.UsedParts.Count == 0)
+        {
+            <div class="alert alert-info mb-0">Робіт і запчастин ще не додано.</div>
+        }
+        else
+        {
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Тип</th>
+                        <th>Назва роботи / запчастини</th>
+                        <th class="text-end">Кількість</th>
+                        <th class="text-end">Ціна (грн)</th>
+                        <th class="text-end">Сума (грн)</th>
+                        <th class="text-end">Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in o.UsedParts)
+                    {
+                        <tr>
+                            <td>@(p.InventoryItem?.ItemType == ItemType.Service ? "Послуга" : "Запчастина")</td>
+                            <td>@p.InventoryItem?.Name</td>
+                            <td class="text-end">@p.QuantityUsed</td>
+                            <td class="text-end">@p.PriceAtTime.ToString("N2")</td>
+                            <td class="text-end">@((p.QuantityUsed * p.PriceAtTime).ToString("N2"))</td>
+                            <td class="text-end">
+                                @if (!locked)
+                                {
+                                    <form asp-action="RemovePart" asp-route-id="@o.Id" asp-route-partId="@p.Id" method="post"
+                                          onsubmit="return confirm('Видалити рядок? Залишок товару повернеться на склад.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <div class="text-end fs-5 fw-bold mt-3">Всього до сплати: @Model.PartsTotal.ToString("N2") грн</div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="AddPart" asp-route-id="@o.Id" method="post" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Додати роботу або запчастину</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Позиція зі складу</label>
+                    <select name="inventoryItemId" class="form-select" required>
+                        <option value="">— оберіть —</option>
+                        <optgroup label="Послуги">
+                            @foreach (var i in Model.InventoryItems.Where(x => x.ItemType == ItemType.Service))
+                            {
+                                <option value="@i.Id">@i.Code · @i.Name — @i.Price.ToString("0.##") ₴</option>
+                            }
+                        </optgroup>
+                        <optgroup label="Запчастини">
+                            @foreach (var i in Model.InventoryItems.Where(x => x.ItemType == ItemType.Product))
+                            {
+                                <option value="@i.Id" disabled="@(i.StockQuantity <= 0)">
+                                    @i.Code · @i.Name — @i.Price.ToString("0.##") ₴ (залишок @i.StockQuantity)
+                                </option>
+                            }
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="mb-0">
+                    <label class="form-label">Кількість</label>
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="10000" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="submit" class="btn btn-primary">Додати</button>
+            </div>
+        </form>
+    </div>
+</div>

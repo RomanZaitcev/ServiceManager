@@ -1,0 +1,41 @@
+﻿@model ServiceManager.Models.InventoryItem
+
+<div class="mb-3">
+    <label asp-for="ItemType" class="form-label"></label>
+    <select asp-for="ItemType" class="form-select" asp-items="Html.GetEnumSelectList<ItemType>()"></select>
+    <span asp-validation-for="ItemType" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Code" class="form-label"></label>
+    <input asp-for="Code" class="form-control" placeholder="ART-1001 або SRV-2001" />
+    <span asp-validation-for="Code" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="mb-3" id="stockWrap">
+    <label asp-for="StockQuantity" class="form-label"></label>
+    <input asp-for="StockQuantity" class="form-control" />
+    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Price" class="form-label"></label>
+    <input asp-for="Price" class="form-control" placeholder="250.00" />
+    <span asp-validation-for="Price" class="text-danger"></span>
+</div>
+
+<script>
+    (function() {
+        var type = document.getElementById('ItemType');
+        var stock = document.getElementById('stockWrap');
+        function update() { stock.style.display = type.value === '1' ? 'none' : ''; }
+        type.addEventListener('change', update);
+        update();
+    })();
+</script>

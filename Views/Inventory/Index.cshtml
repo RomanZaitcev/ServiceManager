@@ -1,0 +1,132 @@
+﻿@model List<ServiceManager.Models.InventoryItem>
+@{
+    ViewData["Title"] = "Склад та послуги";
+    var isManager = User.IsInRole("Manager");
+    var search = ViewData["Search"] as string;
+    var type = ViewData["Type"] as ItemType?;
+    var page = (int)ViewData["Page"]!;
+    var pageSize = (int)ViewData["PageSize"]!;
+    var totalPages = (int)ViewData["TotalPages"]!;
+    var total = (int)ViewData["Total"]!;
+    var from = total == 0 ? 0 : (page - 1) * pageSize + 1;
+    var to = Math.Min(page * pageSize, total);
+    const int lowStock = 3;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Склад та послуги</h1>
+    @if (isManager)
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Додати позицію</a>
+    }
+</div>
+
+<div class="row g-2 mb-3">
+    <div class="col-auto">
+        <div class="btn-group">
+            <a asp-action="Index" asp-route-search="@search"
+               class="btn btn-outline-secondary @(type == null ? "active" : "")">Всі позиції</a>
+            <a asp-action="Index" asp-route-search="@search" asp-route-type="@ItemType.Product"
+               class="btn btn-outline-secondary @(type == ItemType.Product ? "active" : "")">Тільки товари</a>
+            <a asp-action="Index" asp-route-search="@search" asp-route-type="@ItemType.Service"
+               class="btn btn-outline-secondary @(type == ItemType.Service ? "active" : "")">Тільки послуги</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <form method="get">
+            @if (type != null)
+            {
+                <input type="hidden" name="type" value="@type" />
+            }
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" name="search" value="@search" class="form-control" placeholder="Пошук за назвою, артикулом..." />
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Позицій не знайдено.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Артикул</th>
+                <th>Тип</th>
+                <th>Назва позиції</th>
+                <th>Залишок</th>
+                <th class="text-end">Ціна (грн)</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td>@i.Code</td>
+                    <td>
+                        @if (i.ItemType == ItemType.Product)
+                        {
+                            <span class="badge" style="background:#1e5fa8"><i class="bi bi-box-seam"></i> Товар</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success"><i class="bi bi-tools"></i> Послуга</span>
+                        }
+                    </td>
+                    <td>@i.Name</td>
+                    <td>
+                        @if (i.ItemType == ItemType.Service)
+                        {
+                            <span>—</span>
+                        }
+                        else if (i.StockQuantity <= 0)
+                        {
+                            <span class="badge bg-danger">0 шт</span>
+                        }
+                        else if (i.StockQuantity <= lowStock)
+                        {
+                            <span class="badge bg-warning text-dark">@i.StockQuantity шт</span>
+                        }
+                        else
+                        {
+                            <span>@i.StockQuantity шт</span>
+                        }
+                    </td>
+                    <td class="text-end">@i.Price.ToString("0.##") ₴</td>
+                    <td>
+                        @if (isManager)
+                        {
+                            <a asp-action="History" asp-route-id="@i.Id" class="btn btn-sm btn-primary"><i class="bi bi-clock-history"></i> Історія</a>
+                            <a asp-action="Edit" asp-route-id="@i.Id" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i> Редагувати</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">Показано @from–@to з @total позицій</div>
+        <nav>
+            <ul class="pagination mb-0">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-type="@type" asp-route-page="@(page - 1)">Попередня</a>
+                </li>
+                @for (var p = 1; p <= totalPages; p++)
+                {
+                    <li class="page-item @(p == page ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-type="@type" asp-route-page="@p">@p</a>
+                    </li>
+                }
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-search="@search" asp-route-type="@type" asp-route-page="@(page + 1)">Наступна</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}

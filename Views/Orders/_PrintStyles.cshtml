@@ -1,0 +1,155 @@
+﻿<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #000;
+        background: #f0f0f0;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .toolbar {
+        max-width: 780px;
+        margin: 16px auto 0;
+        display: flex;
+        gap: 8px;
+    }
+
+        .toolbar button, .toolbar a {
+            border: 1px solid #1e88e5;
+            background: #1e88e5;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .toolbar a {
+            background: #fff;
+            color: #1e88e5;
+        }
+
+    .sheet {
+        max-width: 780px;
+        margin: 12px auto 24px;
+        padding: 28px 36px;
+        background: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .head {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 2px solid #000;
+        padding-bottom: 8px;
+        margin-bottom: 14px;
+    }
+
+        .head .org {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .head .small {
+            font-size: 12px;
+            color: #444;
+        }
+
+    h1 {
+        font-size: 18px;
+        text-align: center;
+        margin: 8px 0 16px;
+        text-transform: uppercase;
+    }
+
+    table.info {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 12px;
+    }
+
+        table.info td {
+            border: 1px solid #999;
+            padding: 5px 8px;
+            vertical-align: top;
+        }
+
+            table.info td.k {
+                width: 30%;
+                background: #f4f4f4;
+                font-weight: 600;
+            }
+
+    table.items {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+    }
+
+        table.items th, table.items td {
+            border: 1px solid #999;
+            padding: 5px 8px;
+        }
+
+        table.items th {
+            background: #f4f4f4;
+        }
+
+    .r {
+        text-align: right;
+    }
+
+    .total {
+        text-align: right;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 8px 0 16px;
+    }
+
+    .terms {
+        font-size: 12px;
+        margin: 12px 0;
+    }
+
+        .terms li {
+            margin-bottom: 3px;
+        }
+
+    .sign {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 36px;
+        gap: 32px;
+    }
+
+        .sign div {
+            flex: 1;
+            border-top: 1px solid #000;
+            padding-top: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+    @@media print {
+        body {
+            background: #fff;
+        }
+
+        .no-print {
+            display: none !important;
+        }
+
+        .sheet {
+            border: 0;
+            margin: 0;
+            padding: 0;
+            max-width: none;
+        }
+
+        @@page {
+            size: A4;
+            margin: 15mm;
+        }
+    }
+</style>

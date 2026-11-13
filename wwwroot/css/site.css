@@ -1,31 +1,284 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+:root {
+    --sidebar: #4a4a4a;
+    --accent: #1e88e5;
+    --bg: #e6e6e6;
+    --text: #1d1d1f;
+    --muted: #6b7280;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    font-size: 15px;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* ---------- Каркас ---------- */
+.app {
+    display: flex;
+    min-height: 100vh;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: var(--sidebar);
+    color: #fff;
+    padding: 16px 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    padding: 6px 10px 22px;
+}
+
+.nav-side a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #e5e5e5;
+    text-decoration: none;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+}
+
+    .nav-side a:hover {
+        background: rgba(255,255,255,.12);
+    }
+
+    .nav-side a.active {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .nav-side a.disabled {
+        opacity: .45;
+        pointer-events: none;
+    }
+
+.nav-side i {
+    font-size: 1.2rem;
+}
+
+.main-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    background: #fff;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 24px;
+}
+
+    .topbar .who {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .topbar .avatar {
+        font-size: 1.9rem;
+        color: var(--accent);
+        line-height: 1;
+    }
+
+    .topbar .date {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .topbar .btn-logout {
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        color: #666;
+        border-radius: 6px;
+        padding: 2px 12px;
+        font-size: .85rem;
+    }
+
+.content {
+    padding: 24px;
+    flex: 1;
+}
+
+    .content h1 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+/* ---------- Сторінка входу (без бокової панелі) ---------- */
+.auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.12);
+}
+
+    .auth-card .brand {
+        color: var(--text);
+        padding-bottom: 12px;
+        justify-content: center;
+    }
+
+    .auth-card .col-md-4, .auth-card .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+/* ---------- Картки, таблиці, кнопки ---------- */
+.card {
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+.card-header {
+    background: #fff;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.content table.table {
+    background: #fff;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+    .content table.table thead th {
+        background: #f1f3f5;
+        font-weight: 600;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+.btn {
+    border-radius: 8px;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--accent);
+    --bs-btn-border-color: var(--accent);
+    --bs-btn-hover-bg: #1976d2;
+    --bs-btn-hover-border-color: #1976d2;
+    --bs-btn-active-bg: #1565c0;
+    --bs-btn-active-border-color: #1565c0;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+}
+
+/* ---------- Лічильники на панелі ---------- */
+.stat {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-left: 6px solid #999;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    height: 100%;
+}
+
+    .stat .title {
+        font-weight: 600;
+    }
+
+    .stat .num {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .stat .sub {
+        color: var(--muted);
+        font-size: .85rem;
+    }
+
+.stat-green {
+    border-left-color: #22b14c;
+}
+
+.stat-yellow {
+    border-left-color: #f2e600;
+}
+
+.stat-red {
+    border-left-color: #e53935;
+}
+
+.stat-blue {
+    border-left-color: var(--accent);
+}
+
+/* ---------- Бейджі статусів ---------- */
+.st {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.st-Received {
+    background: #00b300;
+}
+
+.st-Queued {
+    background: #6c757d;
+}
+
+.st-Diagnostics {
+    background: #f5a800;
+}
+
+.st-AwaitingParts {
+    background: #e60000;
+}
+
+.st-Repaired {
+    background: #1e88e5;
+}
+
+.st-Released {
+    background: #343a40;
+}
+
+@media (max-width: 800px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
 }

@@ -11,15 +11,31 @@ namespace ServiceManager.Models
         public int ClientId { get; set; }
         public Client? Client { get; set; }
 
-        // Id користувача (майстра) з таблиці AspNetUsers; string, бо так в Identity
         [Display(Name = "Майстер")]
         public string? TechnicianId { get; set; }
         public IdentityUser? Technician { get; set; }
 
-        [Required(ErrorMessage = "Вкажіть пристрій")]
+        [StringLength(50)]
+        [Display(Name = "Тип пристрою")]
+        public string? DeviceType { get; set; }
+
+        // Бренд/модель (поле лишається під старою назвою, щоб не втратити дані)
+        [Required(ErrorMessage = "Вкажіть бренд/модель")]
         [StringLength(200)]
-        [Display(Name = "Пристрій")]
+        [Display(Name = "Бренд/Модель")]
         public string DeviceInfo { get; set; } = string.Empty;
+
+        [StringLength(100)]
+        [Display(Name = "Серійний номер")]
+        public string? SerialNumber { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Комплектація")]
+        public string? Accessories { get; set; }
+
+        [StringLength(300)]
+        [Display(Name = "Зовнішній стан")]
+        public string? ExternalCondition { get; set; }
 
         [Required(ErrorMessage = "Опишіть несправність")]
         [StringLength(1000)]

@@ -1,0 +1,18 @@
+﻿@model ServiceManager.Models.InventoryItem
+@{
+    ViewData["Title"] = "Редагування позиції";
+}
+
+<h1>Редагування позиції</h1>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" style="max-width:480px">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <partial name="_Fields" model="Model" />
+    <button type="submit" class="btn btn-primary">Зберегти</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

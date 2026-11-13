@@ -12,18 +12,22 @@ namespace ServiceManager.Models
         [Display(Name = "Назва")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Вкажіть код")]
+        [Required(ErrorMessage = "Вкажіть артикул")]
         [StringLength(50)]
-        [Display(Name = "Код")]
+        [Display(Name = "Артикул")]
         public string Code { get; set; } = string.Empty;
 
+        [Display(Name = "Тип")]
+        public ItemType ItemType { get; set; } = ItemType.Product;
+
+        // Для послуг залишок не використовується (завжди 0)
         [Range(0, int.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        [Display(Name = "Кількість на складі")]
+        [Display(Name = "Залишок")]
         public int StockQuantity { get; set; }
 
         [Range(0.01, 1000000, ErrorMessage = "Ціна має бути від 0.01 до 1 000 000")]
         [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Ціна")]
+        [Display(Name = "Ціна (грн)")]
         public decimal Price { get; set; }
     }
 }

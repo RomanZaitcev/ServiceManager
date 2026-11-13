@@ -1,0 +1,61 @@
+﻿@model ServiceManager.Models.Client
+@{
+    ViewData["Title"] = Model.FullName;
+}
+
+<h1>@Model.FullName</h1>
+<p class="text-muted">Телефон: @Model.Phone</p>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Редагувати</a>
+    <a asp-action="Index" class="btn btn-secondary">До списку</a>
+</p>
+
+<h4 class="mt-4">Історія ремонтів</h4>
+
+@if (Model.Orders.Count == 0)
+{
+    <div class="alert alert-info">Ремонтів поки немає.</div>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Дата</th>
+                <th>Пристрій</th>
+                <th>Несправність</th>
+                <th>Статус</th>
+                <th>Майстер</th>
+                <th class="text-end">Вартість запчастин</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.Orders)
+            {
+                var badge = o.Status switch
+                {
+                    OrderStatus.Received => "bg-secondary",
+                    OrderStatus.Queued => "bg-info text-dark",
+                    OrderStatus.Diagnostics => "bg-primary",
+                    OrderStatus.AwaitingParts => "bg-warning text-dark",
+                    OrderStatus.Repaired => "bg-success",
+                    OrderStatus.Released => "bg-dark",
+                    _ => "bg-secondary"
+                };
+                var total = o.UsedParts.Sum(p => p.QuantityUsed * p.PriceAtTime);
+
+                <tr>
+                    <td>@o.Id</td>
+                    <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@o.DeviceInfo</td>
+                    <td>@o.ProblemDescription</td>
+                    <td><span class="badge @badge">@Html.DisplayFor(_ => o.Status)</span></td>
+                    <td>@(o.Technician?.Email ?? "не призначено")</td>
+                    <td class="text-end">@total.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

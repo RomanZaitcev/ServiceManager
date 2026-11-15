@@ -1,8 +1,129 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ServiceManager.Models.HomeDashboardViewModel
+@{
+    ViewData["Title"] = "Головна";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@if (!Model.IsManager && !Model.IsTechnician)
+{
+    <div class="alert alert-warning">
+        Вашому обліковому запису ще не призначено роль. Зверніться до менеджера.
+    </div>
+    return;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Панель управління (@(Model.IsManager ? "Менеджер" : "Майстер"))</h1>
+    @if (Model.IsManager)
+    {
+        <a asp-controller="Orders" asp-action="Create" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-lg"></i> Створити замовлення
+        </a>
+    }
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <a asp-controller="Orders" asp-action="Index" asp-route-status="@OrderStatus.Received" class="text-decoration-none text-reset">
+            <div class="stat stat-green">
+                <div class="title">@(Model.IsManager ? "Нові замовлення" : "Мої нові")</div>
+                <div class="num">@Model.NewCount</div>
+                <div class="sub">Статус «Прийнято»</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <a asp-controller="Orders" asp-action="Index" class="text-decoration-none text-reset">
+            <div class="stat stat-yellow">
+                <div class="title">@(Model.IsManager ? "В роботі" : "Мої активні ремонти")</div>
+                <div class="num">@Model.ActiveCount</div>
+                <div class="sub">Усі, крім виданих</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <a asp-controller="Orders" asp-action="Index" asp-route-status="@OrderStatus.AwaitingParts" class="text-decoration-none text-reset">
+            <div class="stat stat-red">
+                <div class="title">Очікують запчастин</div>
+                <div class="num">@Model.AwaitingPartsCount</div>
+                <div class="sub">Призупинено</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat stat-blue">
+            @if (Model.IsManager)
+            {
+                <div class="title">Каса за місяць</div>
+                <div class="num">@Model.CashMonth.ToString("N0") грн</div>
+                <div class="sub">Закриті ремонти</div>
+            }
+            else
+            {
+                <div class="title">Виконано цього місяця</div>
+                <div class="num">@Model.DoneMonthCount</div>
+                <div class="sub">Успішні ремонти</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="mb-3">Останні звернення</h5>
+
+        @if (Model.Recent.Count == 0)
+        {
+            <div class="alert alert-info mb-0">Замовлень поки немає.</div>
+        }
+        else
+        {
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        @if (Model.IsManager)
+                        {
+                            <th>Клієнт</th>
+                        }
+                        <th>Пристрій</th>
+                        @if (!Model.IsManager)
+                        {
+                            <th>Опис несправності</th>
+                        }
+                        <th>Статус</th>
+                        @if (Model.IsManager)
+                        {
+                            <th>Майстер</th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model.Recent)
+                    {
+                        <tr>
+                            <td>@o.Id</td>
+                            @if (Model.IsManager)
+                            {
+                                <td>@o.Client?.FullName</td>
+                            }
+                            <td>@o.DeviceInfo</td>
+                            @if (!Model.IsManager)
+                            {
+                                <td>@o.ProblemDescription</td>
+                            }
+                            <td><partial name="_StatusBadge" model="o.Status" /></td>
+                            @if (Model.IsManager)
+                            {
+                                <td>@(o.Technician?.Email?.Split('@')[0] ?? "—")</td>
+                            }
+                            <td class="text-end">
+                                <a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id" class="btn btn-sm btn-outline-secondary">Перегляд</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>

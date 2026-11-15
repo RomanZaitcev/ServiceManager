@@ -1,8 +1,9 @@
 ﻿@model ServiceManager.Models.Order
+@using Microsoft.Extensions.Options
+@inject IOptions<CompanyOptions> Company
 @{
     Layout = null;
-    var orgName = "СервісЦентр";
-    var orgInfo = "м. Київ, вул. Прикладна, 1 · тел. +380 44 000 00 00";
+    var c = Company.Value;
     var total = Model.UsedParts.Sum(p => p.QuantityUsed * p.PriceAtTime);
     var actDate = Model.UpdatedAt ?? DateTime.Now;
     var n = 0;
@@ -17,25 +18,25 @@
 </head>
 <body>
     <div class="toolbar no-print">
-        <button type="button" onclick="window.print()">Друкувати</button>
+        <button type="button" onclick="window.print()">Друк</button>
         <a asp-action="Details" asp-route-id="@Model.Id">Назад до замовлення</a>
     </div>
 
     <div class="sheet">
         <div class="head">
-    <div>
-        <div class="org">@c.Name</div>
-        <div class="small">@c.Address · тел. @c.Phone</div>
-        @if (!string.IsNullOrWhiteSpace(c.TaxId))
-        {
-            <div class="small">Код ЄДРПОУ/ІПН: @c.TaxId</div>
-        }
-    </div>
-    <div class="small" style="text-align:right">
-        Акт до замовлення №@Model.Id<br />
-        від @actDate.ToString("dd.MM.yyyy")
-    </div>
-</div>
+            <div>
+                <div class="org">@c.Name</div>
+                <div class="small">@c.Address · тел. @c.Phone</div>
+                @if (!string.IsNullOrWhiteSpace(c.TaxId))
+                {
+                    <div class="small">Код ЄДРПОУ/ІПН: @c.TaxId</div>
+                }
+            </div>
+            <div class="small" style="text-align:right">
+                Акт до замовлення №@Model.Id<br />
+                від @actDate.ToString("dd.MM.yyyy")
+            </div>
+        </div>
 
         <h1>Акт виконаних робіт</h1>
 

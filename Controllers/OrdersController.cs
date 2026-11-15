@@ -326,7 +326,7 @@ namespace ServiceManager.Controllers
 
         // ---------- Друк квитанції про прийом ----------
         [Authorize(Roles = AppRoles.Manager)]
-        public async Task<IActionResult> PrintReceipt(int? id)
+        public async Task<IActionResult> ReceiptOfAcceptance(int? id)
         {
             if (id == null) return NotFound();
 
@@ -341,7 +341,7 @@ namespace ServiceManager.Controllers
 
         // ---------- Друк акта виконаних робіт ----------
         [Authorize(Roles = AppRoles.Manager)]
-        public async Task<IActionResult> PrintAct(int? id)
+        public async Task<IActionResult> ActOfCompletion(int? id)
         {
             if (id == null) return NotFound();
 

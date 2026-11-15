@@ -23,15 +23,19 @@
 
     <div class="sheet">
         <div class="head">
-            <div>
-                <div class="org">@orgName</div>
-                <div class="small">@orgInfo</div>
-            </div>
-            <div class="small" style="text-align:right">
-                Акт до замовлення №@Model.Id<br />
-                від @actDate.ToString("dd.MM.yyyy")
-            </div>
-        </div>
+    <div>
+        <div class="org">@c.Name</div>
+        <div class="small">@c.Address · тел. @c.Phone</div>
+        @if (!string.IsNullOrWhiteSpace(c.TaxId))
+        {
+            <div class="small">Код ЄДРПОУ/ІПН: @c.TaxId</div>
+        }
+    </div>
+    <div class="small" style="text-align:right">
+        Акт до замовлення №@Model.Id<br />
+        від @actDate.ToString("dd.MM.yyyy")
+    </div>
+</div>
 
         <h1>Акт виконаних робіт</h1>
 

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ServiceManager.Data;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using ServiceManager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.Configure<CompanyOptions>(builder.Configuration.GetSection("Company"));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {

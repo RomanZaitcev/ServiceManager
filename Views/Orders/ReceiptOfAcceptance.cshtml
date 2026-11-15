@@ -1,8 +1,9 @@
 ﻿@model ServiceManager.Models.Order
+@using Microsoft.Extensions.Options
+@inject IOptions<CompanyOptions> Company
 @{
     Layout = null;
-    var orgName = "СервісЦентр";
-    var orgInfo = "м. Київ, вул. Прикладна, 1 · тел. +380 44 000 00 00";
+    var c = Company.Value;
 }
 <!DOCTYPE html>
 <html lang="uk">
@@ -14,15 +15,19 @@
 </head>
 <body>
     <div class="toolbar no-print">
-        <button type="button" onclick="window.print()">Друкувати</button>
+        <button type="button" onclick="window.print()">Друк</button>
         <a asp-action="Details" asp-route-id="@Model.Id">Назад до замовлення</a>
     </div>
 
     <div class="sheet">
         <div class="head">
             <div>
-                <div class="org">@orgName</div>
-                <div class="small">@orgInfo</div>
+                <div class="org">@c.Name</div>
+                <div class="small">@c.Address · тел. @c.Phone</div>
+                @if (!string.IsNullOrWhiteSpace(c.TaxId))
+                {
+                    <div class="small">Код ЄДРПОУ/ІПН: @c.TaxId</div>
+                }
             </div>
             <div class="small" style="text-align:right">
                 Квитанція №@Model.Id<br />

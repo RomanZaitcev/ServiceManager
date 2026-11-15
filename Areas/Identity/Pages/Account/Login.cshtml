@@ -16,9 +16,17 @@
         <span asp-validation-for="Input.Email" class="text-danger"></span>
     </div>
 
-    <div class="form-floating mb-3">
-        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
-        <label asp-for="Input.Password" class="form-label">Password</label>
+    <div class="mb-3">
+        <div class="form-floating position-relative">
+            <input asp-for="Input.Password" class="form-control pe-5" autocomplete="current-password" aria-required="true" placeholder="Password" />
+            <label asp-for="Input.Password" class="form-label">Password</label>
+            <button type="button" id="togglePassword"
+                    class="btn border-0 text-secondary position-absolute top-50 end-0 translate-middle-y me-1"
+                    style="z-index: 5;"
+                    aria-label="Show password" title="Show password" tabindex="-1">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
         <span asp-validation-for="Input.Password" class="text-danger"></span>
     </div>
 
@@ -32,4 +40,20 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function() {
+            var input = document.getElementById('Input_Password');
+            var button = document.getElementById('togglePassword');
+            var icon = button.querySelector('i');
+
+            button.addEventListener('click', function() {
+                var show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+                button.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+                button.title = show ? 'Hide password' : 'Show password';
+                input.focus();
+            });
+        })();
+    </script>
 }

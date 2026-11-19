@@ -16,11 +16,29 @@ builder.Services.Configure<CompanyOptions>(builder.Configuration.GetSection("Com
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false; // підтвердження пошти нам не потрібне
-    options.Password.RequiredLength = 6;
+    options.SignIn.RequireConfirmedAccount = false;
+
+    // політика паролів
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+
+    // захист від підбору: 5 невдалих спроб, блокування на 5 хвилин
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 })
-.AddRoles<IdentityRole>()                          // увімкнули ролі
+.AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// стан автентифікації: сесія 8 годин, подовжується під час роботи
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.SlidingExpiration = true;
+});
 
 builder.Services.AddControllersWithViews();
 

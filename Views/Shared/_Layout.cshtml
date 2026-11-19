@@ -56,6 +56,10 @@ else
                 <span class="who">@roleLabel: @shortName</span>
                 <span class="avatar"><i class="bi bi-person-circle"></i></span>
                 <span class="date">@DateTime.Now.ToString("dd.MM.yyyy")</span>
+                    <a asp-area="Identity" asp-page="/Account/Manage/TwoFactorAuthentication"
+                       class="text-decoration-none small" title="Безпека облікового запису">
+                        <i class="bi bi-shield-lock"></i> Безпека
+                    </a>
                 <form asp-area="Identity" asp-page="/Account/Logout"
                       asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
                     <button type="submit" class="btn-logout">Вихід</button>

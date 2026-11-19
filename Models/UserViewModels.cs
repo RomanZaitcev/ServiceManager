@@ -10,7 +10,7 @@ namespace ServiceManager.Models
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Вкажіть пароль")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль щонайменше 6 символів")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Пароль щонайменше 8 символів")]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; } = string.Empty;
@@ -25,4 +25,5 @@ namespace ServiceManager.Models
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
     }
+
 }
